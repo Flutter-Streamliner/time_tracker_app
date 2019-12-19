@@ -70,3 +70,6 @@
 !**/ios/**/default.pbxuser
 !**/ios/**/default.perspectivev3
 !/packages/flutter_tools/test/data/dart_dependencies_test/**/.packages
+
+# This is a generated file; do not edit or check into version control
+.flutter-plugins-dependencies
