@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 abstract class AuthBase {
+  Stream<User> get onAuthStateChanged;
   Future<User> currentUser();
   Future<User> signInAnonymously();
   Future<void> signOut();
@@ -14,6 +15,10 @@ class Auth implements AuthBase {
   User _userFromFirebase(FirebaseUser user) {
     if (user == null) return null;
     return User(uid: user.uid);
+  }
+
+  Stream<User> get onAuthStateChanged {
+    return _firebaseAuth.onAuthStateChanged.map(_userFromFirebase);
   }
 
   @override Future<User> currentUser() async {
