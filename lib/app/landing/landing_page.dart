@@ -19,6 +19,17 @@ class _LandingPageState extends State<LandingPage> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    _checkCurrentUser();
+  }
+
+  Future<void> _checkCurrentUser() async {
+    FirebaseUser user = await FirebaseAuth.instance.currentUser();
+    _updateUser(user);
+  }
+
+  @override
   Widget build(BuildContext context) {
     return _user == null ? SignInPage(onSignIn: _updateUser) : HomePage(onSignOut: () => _updateUser(null));
   }
