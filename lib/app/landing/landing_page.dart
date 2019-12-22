@@ -3,56 +3,26 @@ import 'package:time_tracker_app/app/home/home_page.dart';
 import 'package:time_tracker_app/app/services/auth.dart';
 import 'package:time_tracker_app/app/sign_in/sign_in_page.dart';
 
-class LandingPage extends StatefulWidget {
+class LandingPage extends StatelessWidget {
 
   final AuthBase auth;
 
   LandingPage({@required this.auth});
 
   @override
-  _LandingPageState createState() => _LandingPageState();
-}
-
-class _LandingPageState extends State<LandingPage> {
-
-  User _user;
-
-  void _updateUser(User user) {
-    setState(() {
-      _user = user;
-    });
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _checkCurrentUser();
-    widget.auth.onAuthStateChanged.listen((user) {
-      print('user: ${user?.uid}');
-    });
-  }
-
-  Future<void> _checkCurrentUser() async {
-    User user = await widget.auth.currentUser();
-    _updateUser(user);
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return StreamBuilder(
-      stream: widget.auth.onAuthStateChanged,
+    return StreamBuilder<User>(
+      stream: auth.onAuthStateChanged,
       builder: (context, snapshot){
-        if (snapshot.hasData) {
+        if (snapshot.connectionState == ConnectionState.active) {
           User user = snapshot.data;
           if (user == null) {
             return SignInPage(
-              auth: widget.auth, 
-              onSignIn: _updateUser,
+              auth: auth, 
             );
           }
           return HomePage(
-            auth: widget.auth,
-            onSignOut: () => _updateUser(null),
+            auth: auth,
           );
         } else {
           return Scaffold(
