@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:time_tracker_app/app/services/auth.dart';
 import 'package:time_tracker_app/app/sign_in/sign_in_button.dart';
 import 'package:time_tracker_app/app/sign_in/social_sign_in_button.dart';
@@ -85,8 +86,12 @@ class SignInPage extends StatelessWidget {
     }
   }
 
-  void _signInWithGoogle() {
-
+  void _signInWithGoogle() async {
+    try {
+      await auth.signInWithGoogle();
+    } catch (e) {
+      print(e.toString());
+    }
   }
 
 }
