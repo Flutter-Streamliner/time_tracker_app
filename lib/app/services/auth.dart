@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 abstract class AuthBase {
@@ -8,6 +9,7 @@ abstract class AuthBase {
   Future<User> currentUser();
   Future<User> signInAnonymously();
   Future<User> signInWithGoogle();
+  Future<User> signInWithFacebook();
   Future<void> signOut();
 }
 
@@ -32,12 +34,6 @@ class Auth implements AuthBase {
   @override Future<User> signInAnonymously() async {
     final authResult = await _firebaseAuth.signInAnonymously();
     return _userFromFirebase(authResult.user);
-  }
-
-  @override Future<void> signOut() async {
-    final GoogleSignIn googleSignIn = GoogleSignIn();
-    googleSignIn.signOut();
-    await _firebaseAuth.signOut();
   }
 
   @override
@@ -66,6 +62,47 @@ class Auth implements AuthBase {
         message: 'Sign in aborted by user',
       );
     }
+  }
+
+  @override
+  Future<User> signInWithFacebook() async {
+    final facebookLogin = FacebookLogin();
+    final result = await facebookLogin.logIn(['public_profile']);
+
+    switch (result.status) {
+      case FacebookLoginStatus.loggedIn:
+        final authResult = await _firebaseAuth.signInWithCredential(
+          FacebookAuthProvider.getCredential(accessToken: result.accessToken.token)
+        );
+        return _userFromFirebase(authResult.user);
+        break;
+      case FacebookLoginStatus.cancelledByUser:
+        throw PlatformException(
+          code: 'ERROR_ABORTED_BY_USER',
+          message: 'Sign in aborted by user',
+        );
+        break;
+      case FacebookLoginStatus.error:
+        throw PlatformException(
+          code: 'ERROR_MISSING_FACEBOOK_AUTH_TOKEN',
+          message: 'Missing Facebook Auth Token',
+        );
+        break;  
+      default:
+        throw PlatformException(
+          code: 'ERROR_FACEBOOK_AUTH',
+          message: 'Unknown Error Facebook Auth',
+        );
+    }
+  }
+
+  @override 
+  Future<void> signOut() async {
+    final GoogleSignIn googleSignIn = GoogleSignIn();
+    await googleSignIn.signOut();
+    final FacebookLogin facebookLogin = FacebookLogin();
+    await facebookLogin.logOut();
+    await _firebaseAuth.signOut();
   }
 
 }
