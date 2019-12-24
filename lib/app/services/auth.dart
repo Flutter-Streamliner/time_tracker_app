@@ -10,6 +10,8 @@ abstract class AuthBase {
   Future<User> signInAnonymously();
   Future<User> signInWithGoogle();
   Future<User> signInWithFacebook();
+  Future<User> signInWithEmailAndPassword({String email, String password});
+  Future<User> createUserWithEmailAndPassword({String email, String password});
   Future<void> signOut();
 }
 
@@ -94,6 +96,18 @@ class Auth implements AuthBase {
           message: 'Unknown Error Facebook Auth',
         );
     }
+  }
+
+  @override
+  Future<User> signInWithEmailAndPassword({String email, String password}) async {
+    final authResult = await _firebaseAuth.signInWithEmailAndPassword(email: email, password: password);
+    return _userFromFirebase(authResult.user);
+  }
+
+  @override
+  Future<User> createUserWithEmailAndPassword({String email, String password}) async {
+    final authResult = await _firebaseAuth.createUserWithEmailAndPassword(email: email, password: password);
+    return _userFromFirebase(authResult.user);
   }
 
   @override 
