@@ -59,7 +59,7 @@ class _EmailSignInFormState extends State<EmailSignInForm> {
     final String primaryText = _formType == EmailSignInFormType.signIn ? 'Sign in' : 'Create an account';
     final String secondaryText = _formType == EmailSignInFormType.signIn ? 'Need an account? Register' : 'Have an account? Sign in';
     bool submitEnabled = widget.emailValidator.isValid(_email) && widget.passwordValidator.isValid(_password);
-    
+
     return [
       _buildEmailTextField(),
       SizedBox(height: 8.0,),
@@ -78,6 +78,7 @@ class _EmailSignInFormState extends State<EmailSignInForm> {
   }
 
   Widget _buildEmailTextField() {
+    bool emailValid = widget.emailValidator.isValid(_email);
     return TextField(
         controller: _emailController,
         autocorrect: false, // remove suggestions on keyboard
@@ -88,6 +89,7 @@ class _EmailSignInFormState extends State<EmailSignInForm> {
         decoration: InputDecoration(
           labelText: 'Email',
           hintText: 'test@test.com',
+          errorText: emailValid ? null : widget.invalidEmailErrorText,
         ),
         onChanged: (email) => _updateState(),
       );
@@ -99,6 +101,7 @@ class _EmailSignInFormState extends State<EmailSignInForm> {
   }
 
   Widget _buildPasswordTextField() {
+    bool passwordValid = widget.passwordValidator.isValid(_password);
     return TextField(
         controller: _passwordController,
         textInputAction: TextInputAction.done,
@@ -106,6 +109,7 @@ class _EmailSignInFormState extends State<EmailSignInForm> {
         onEditingComplete: _submit,
         decoration: InputDecoration(
           labelText: 'Password',
+          errorText: passwordValid ? null : widget.invalidPasswordErrorText,
         ),
         obscureText: true,
         onChanged: (password) => _updateState(),
