@@ -29,8 +29,14 @@ class _EmailSignInFormState extends State<EmailSignInForm> {
   String get _password => _passwordController.text;
 
   EmailSignInFormType _formType = EmailSignInFormType.signIn;
+  bool _submitted = false;
+  bool _isLoading = false;
 
   void _submit() async {
+    setState(() {
+      _submitted = true;
+      _isLoading = true;
+    });
     try {
       if (_formType == EmailSignInFormType.signIn) {
         await widget.auth.signInWithEmailAndPassword(email: _email, password: _password);
@@ -40,11 +46,16 @@ class _EmailSignInFormState extends State<EmailSignInForm> {
       Navigator.of(context).pop();
     } catch (e) {
       print(e.toString());
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
 
   void _toggleFormType() {
     setState(() {
+      _submitted = false;
       _formType = _formType == EmailSignInFormType.signIn ? EmailSignInFormType.register : EmailSignInFormType.signIn;
       _emailController.clear();
       _passwordController.clear();
@@ -52,13 +63,15 @@ class _EmailSignInFormState extends State<EmailSignInForm> {
   }
 
   void _emailEditingComplete() {
-    FocusScope.of(context).requestFocus(_passwordFocus);
+    final newFocus = widget.emailValidator.isValid(_email) ? _passwordFocus : _emailFocus;
+    FocusScope.of(context).requestFocus(newFocus);
   }
 
   List<Widget> _buildChildren() {
     final String primaryText = _formType == EmailSignInFormType.signIn ? 'Sign in' : 'Create an account';
     final String secondaryText = _formType == EmailSignInFormType.signIn ? 'Need an account? Register' : 'Have an account? Sign in';
-    bool submitEnabled = widget.emailValidator.isValid(_email) && widget.passwordValidator.isValid(_password);
+    bool submitEnabled = widget.emailValidator.isValid(_email) && 
+      widget.passwordValidator.isValid(_password) && !_isLoading;
 
     return [
       _buildEmailTextField(),
@@ -72,13 +85,13 @@ class _EmailSignInFormState extends State<EmailSignInForm> {
       SizedBox(height: 8.0,),
       FlatButton(
         child: Text(secondaryText),
-        onPressed: _toggleFormType,
+        onPressed: !_isLoading ? _toggleFormType : null,
       ),
     ];
   }
 
   Widget _buildEmailTextField() {
-    bool emailValid = widget.emailValidator.isValid(_email);
+    bool showErrorText = _submitted && widget.emailValidator.isValid(_email);
     return TextField(
         controller: _emailController,
         autocorrect: false, // remove suggestions on keyboard
@@ -89,7 +102,8 @@ class _EmailSignInFormState extends State<EmailSignInForm> {
         decoration: InputDecoration(
           labelText: 'Email',
           hintText: 'test@test.com',
-          errorText: emailValid ? null : widget.invalidEmailErrorText,
+          errorText: showErrorText ? widget.invalidEmailErrorText : null,
+          enabled: !_isLoading,
         ),
         onChanged: (email) => _updateState(),
       );
@@ -101,7 +115,7 @@ class _EmailSignInFormState extends State<EmailSignInForm> {
   }
 
   Widget _buildPasswordTextField() {
-    bool passwordValid = widget.passwordValidator.isValid(_password);
+    bool showErrorText = _submitted && widget.passwordValidator.isValid(_password);
     return TextField(
         controller: _passwordController,
         textInputAction: TextInputAction.done,
@@ -109,7 +123,8 @@ class _EmailSignInFormState extends State<EmailSignInForm> {
         onEditingComplete: _submit,
         decoration: InputDecoration(
           labelText: 'Password',
-          errorText: passwordValid ? null : widget.invalidPasswordErrorText,
+          errorText: showErrorText ? widget.invalidPasswordErrorText : null,
+          enabled: !_isLoading,
         ),
         obscureText: true,
         onChanged: (password) => _updateState(),
