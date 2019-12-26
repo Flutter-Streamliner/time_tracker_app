@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:time_tracker_app/app/services/auth.dart';
+import 'package:time_tracker_app/app/sign_in/validators.dart';
 import 'package:time_tracker_app/app/widgets/form_submit_button.dart';
 
 enum EmailSignInFormType {
   signIn, register
 }
 
-class EmailSignInForm extends StatefulWidget {
+class EmailSignInForm extends StatefulWidget with EmailAndPasswordValidators {
 
   final AuthBase auth;
 
@@ -19,6 +20,8 @@ class EmailSignInForm extends StatefulWidget {
 
 class _EmailSignInFormState extends State<EmailSignInForm> {
 
+  final FocusNode _emailFocus = FocusNode();
+  final FocusNode _passwordFocus = FocusNode();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
@@ -48,9 +51,15 @@ class _EmailSignInFormState extends State<EmailSignInForm> {
     });
   }
 
+  void _emailEditingComplete() {
+    FocusScope.of(context).requestFocus(_passwordFocus);
+  }
+
   List<Widget> _buildChildren() {
     final String primaryText = _formType == EmailSignInFormType.signIn ? 'Sign in' : 'Create an account';
     final String secondaryText = _formType == EmailSignInFormType.signIn ? 'Need an account? Register' : 'Have an account? Sign in';
+    bool submitEnabled = widget.emailValidator.isValid(_email) && widget.passwordValidator.isValid(_password);
+    
     return [
       _buildEmailTextField(),
       SizedBox(height: 8.0,),
@@ -58,7 +67,7 @@ class _EmailSignInFormState extends State<EmailSignInForm> {
       SizedBox(height: 8.0,),
       FormSubmitButton(
         text: primaryText,
-        onPressed: _submit,
+        onPressed: submitEnabled ? _submit : null,
       ),
       SizedBox(height: 8.0,),
       FlatButton(
@@ -74,21 +83,32 @@ class _EmailSignInFormState extends State<EmailSignInForm> {
         autocorrect: false, // remove suggestions on keyboard
         keyboardType: TextInputType.emailAddress,
         textInputAction: TextInputAction.next,
+        focusNode: _emailFocus,
+        onEditingComplete: _emailEditingComplete,
         decoration: InputDecoration(
           labelText: 'Email',
           hintText: 'test@test.com',
         ),
+        onChanged: (email) => _updateState(),
       );
+  }
+
+  void _updateState() {
+    setState(() {
+    });
   }
 
   Widget _buildPasswordTextField() {
     return TextField(
         controller: _passwordController,
         textInputAction: TextInputAction.done,
+        focusNode: _passwordFocus,
+        onEditingComplete: _submit,
         decoration: InputDecoration(
           labelText: 'Password',
         ),
         obscureText: true,
+        onChanged: (password) => _updateState(),
       );
   }
 
