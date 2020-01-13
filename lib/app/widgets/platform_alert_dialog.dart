@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:time_tracker_app/app/widgets/platform_widget.dart';
@@ -7,23 +9,30 @@ class PlatformAlertDialog extends PlatformWidget {
   final String title;
   final String content;
   final String defaultActionText;
+  final String cancelActionText;
 
   PlatformAlertDialog({
     @required this.title, 
     @required this.content, 
-    @required this.defaultActionText
+    @required this.defaultActionText,
+    this.cancelActionText
   }) : assert (title != null), assert(content != null), assert(defaultActionText != null);
 
   Future<bool> show(BuildContext context) async {
-    return await showDialog<bool>(
-      context: context,
-      builder: (context) => this,
-    );
+    return Platform.isIOS
+     ? await showCupertinoDialog<bool>(
+       context: context,
+       builder: (context) => this,
+     )
+     : await showDialog<bool>(
+        context: context,
+        builder: (context) => this,
+       );
   }
 
   @override
   Widget buildCupertinoWidget(BuildContext context) {
-    throw CupertinoAlertDialog(
+    return CupertinoAlertDialog(
       title: Text(title),
       content: Text(content),
       actions: _buildActions(context),
@@ -32,7 +41,7 @@ class PlatformAlertDialog extends PlatformWidget {
 
   @override
   Widget buildMaterialWidget(BuildContext context) {
-    throw AlertDialog(
+    return AlertDialog(
       title: Text(title),
       content: Text(content),
       actions: _buildActions(context),
@@ -40,12 +49,21 @@ class PlatformAlertDialog extends PlatformWidget {
   }
 
   List<Widget> _buildActions(BuildContext context) {
-    return [
-      PlatformAlertDialogAction(
+    final actions = List<Widget>();
+    if (cancelActionText != null) {
+      actions.add(
+        PlatformAlertDialogAction(
+          child: Text(cancelActionText),
+          onPressed: () => Navigator.of(context).pop(false),
+        ),
+      );
+    }
+    actions.add(PlatformAlertDialogAction(
         child: Text(defaultActionText),
-        onPressed: () => Navigator.of(context).pop(),
-      ),
-    ];
+        onPressed: () => Navigator.of(context).pop(true),
+      )
+    );
+    return actions;
   }
 
 }
@@ -59,7 +77,7 @@ class PlatformAlertDialogAction extends PlatformWidget {
 
   @override
   Widget buildCupertinoWidget(BuildContext context) {
-    throw CupertinoDialogAction(
+    return CupertinoDialogAction(
       child: child,
       onPressed: onPressed,
     );
@@ -67,7 +85,7 @@ class PlatformAlertDialogAction extends PlatformWidget {
 
   @override
   Widget buildMaterialWidget(BuildContext context) {
-    throw FlatButton(
+    return FlatButton(
       child: child,
       onPressed: onPressed,
     );
