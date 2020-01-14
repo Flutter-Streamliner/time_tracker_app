@@ -1,13 +1,12 @@
 
 import 'package:flutter/material.dart';
 import 'package:time_tracker_app/app/services/auth.dart';
+import 'package:time_tracker_app/app/services/auth_provider.dart';
 import 'package:time_tracker_app/app/widgets/platform_alert_dialog.dart';
 
 class HomePage extends StatelessWidget {
 
-  final AuthBase auth;
-
-  HomePage({@required this.auth});
+  HomePage();
 
   @override
   Widget build(BuildContext context) {
@@ -24,9 +23,9 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  Future<void> _signOut() async {
+  Future<void> _signOut(BuildContext context) async {
     try{ 
-      await auth.signOut();
+      await AuthProvider.of(context).signOut();
     } catch (e) {
       print(e.toString());
     }
@@ -39,6 +38,6 @@ class HomePage extends StatelessWidget {
       defaultActionText: 'Logout',
       cancelActionText: 'Cancel',
     ).show(context);
-    if (didRequestSignOut == true) _signOut();
+    if (didRequestSignOut == true) _signOut(context);
   }
 }
