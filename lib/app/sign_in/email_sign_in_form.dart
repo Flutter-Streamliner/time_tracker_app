@@ -4,7 +4,6 @@ import 'package:provider/provider.dart';
 import 'package:time_tracker_app/app/services/auth.dart';
 import 'package:time_tracker_app/app/sign_in/validators.dart';
 import 'package:time_tracker_app/app/widgets/form_submit_button.dart';
-import 'package:time_tracker_app/app/widgets/platform_alert_dialog.dart';
 import 'package:time_tracker_app/app/widgets/platform_exception_alert_dialog.dart';
 
 enum EmailSignInFormType {
@@ -31,6 +30,15 @@ class _EmailSignInFormState extends State<EmailSignInForm> {
   EmailSignInFormType _formType = EmailSignInFormType.signIn;
   bool _submitted = false;
   bool _isLoading = false;
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    _emailFocus.dispose();
+    _passwordFocus.dispose();
+    super.dispose();
+  }
 
   void _submit() async {
     setState(() {
