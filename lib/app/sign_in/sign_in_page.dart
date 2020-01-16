@@ -15,8 +15,9 @@ class SignInPage extends StatelessWidget {
   SignInPage({@required this.bloc});
 
   static Widget create(BuildContext context) {
+    final auth = Provider.of<AuthBase>(context);
     return Provider<SignInBloc>(
-      create: (_) => SignInBloc(),
+      create: (_) => SignInBloc(auth: auth),
       dispose: (context, bloc) => bloc.dispose(),
       child: Consumer<SignInBloc>(builder: (context, bloc, child) => SignInPage(bloc: bloc)),
     );
@@ -108,42 +109,28 @@ class SignInPage extends StatelessWidget {
   }
 
   Future<void> _signInAnonymously(BuildContext context) async {
-    _updateState(context, true);
     try {
-      await Provider.of<AuthBase>(context, listen: false).signInAnonymously();
+      await bloc.signInAnonymously();
     } on PlatformException catch (e) {
       _showSignInError(context, e);
-    }
-    finally {
-      _updateState(context, false);
     }
   }
 
   void _signInWithGoogle(BuildContext context) async {
-    _updateState(context, true);
     try {
-      await Provider.of<AuthBase>(context, listen: false).signInWithGoogle();
+      await bloc.signInWithGoogle();
     } on PlatformException catch (e) {
       if (e.code != 'ERROR_ABORTED_BY_USER')
         _showSignInError(context, e);
-    } catch (e) {
-      print(e.toString());
-    }
-    finally {
-      _updateState(context, false);
-    }
+    } 
   }
 
   void _signInWithFacebook(BuildContext context) async {
-    _updateState(context, true);
     try {
-      await Provider.of<AuthBase>(context, listen: false).signInWithFacebook();
+      await bloc.signInWithFacebook();
     } on PlatformException catch (e) {
       if (e.code != 'ERROR_ABORTED_BY_USER')
         _showSignInError(context, e);
-    }
-    finally {
-      _updateState(context, false);
     }
   }
 
@@ -152,9 +139,5 @@ class SignInPage extends StatelessWidget {
       MaterialPageRoute<void>(fullscreenDialog: true, builder: (context) => EmailSignInPage())
     );
   }
-
-  void _updateState(BuildContext context, bool isLoading) {
-    bloc.setLoading(isLoading);
-   }
 
 }
