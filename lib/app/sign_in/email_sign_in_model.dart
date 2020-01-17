@@ -1,4 +1,6 @@
-import 'package:time_tracker_app/app/sign_in/email_sign_in_form_stateful.dart';
+
+
+import 'package:time_tracker_app/app/sign_in/email_sign_in_bloc_based.dart';
 
 class EmailSignInModel {
   final String email;
@@ -28,5 +30,8 @@ class EmailSignInModel {
     isLoading: isLoading ?? this.isLoading,
     submitted: submitted ?? this.submitted
   );
+
+  @override
+  String toString() => 'email=$email password=$password formType=$formType isLoading=$isLoading submitted=$submitted';
 
 }
