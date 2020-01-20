@@ -52,7 +52,7 @@ class _EmailSignInFormState extends State<EmailSignInFormBlocBased> {
 
   void _submit() async {
     try {
-      widget.bloc.submit();
+      await widget.bloc.submit();
       Navigator.of(context).pop();
     } on PlatformException catch (e) {
       PlatformExceptionAlertDialog(
@@ -78,9 +78,6 @@ class _EmailSignInFormState extends State<EmailSignInFormBlocBased> {
     final String secondaryText = model.formType == EmailSignInFormType.signIn ? 'Need an account? Register' : 'Have an account? Sign in';
     bool submitEnabled = widget.emailValidator.isValid(model.email) && 
       widget.passwordValidator.isValid(model.password) && !model.isLoading;
-    print('_buildChildren submitEnabled = $submitEnabled');
-    print('widget.emailValidator.isValid(model.email) ${widget.emailValidator.isValid(model.email)} model.email = ${model.email}');
-    print('widget.passwordValidator.isValid(model.password) ${widget.passwordValidator.isValid(model.password)} model.password = ${model.password}');
     return [
       _buildEmailTextField(model),
       SizedBox(height: 8.0,),
@@ -99,7 +96,7 @@ class _EmailSignInFormState extends State<EmailSignInFormBlocBased> {
   }
 
   Widget _buildEmailTextField(EmailSignInModel model) {
-    bool showErrorText = model.submitted && widget.emailValidator.isValid(model.email);
+    bool showErrorText = model.submitted && !widget.emailValidator.isValid(model.email);
     return TextField(
         controller: _emailController,
         autocorrect: false, // remove suggestions on keyboard
@@ -121,7 +118,7 @@ class _EmailSignInFormState extends State<EmailSignInFormBlocBased> {
   }
 
   Widget _buildPasswordTextField(EmailSignInModel model) {
-    bool showErrorText = model.submitted && widget.passwordValidator.isValid(model.password);
+    bool showErrorText = model.submitted && !widget.passwordValidator.isValid(model.password);
     return TextField(
         controller: _passwordController,
         textInputAction: TextInputAction.done,

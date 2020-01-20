@@ -42,7 +42,7 @@ class EmailSignInBloc {
   }) {
     print('EmailSignInBloc updateWith email $email, password $password');
     // update model
-    _model.copyWith(
+    _model = _model.copyWith(
       email: email,
       password: password,
       formType: formType,
