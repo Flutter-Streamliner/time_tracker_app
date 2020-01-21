@@ -3,13 +3,13 @@ import 'dart:async';
 import 'package:time_tracker_app/app/services/auth.dart';
 import 'package:flutter/material.dart';
 
-class SignInBloc {
+class SignInManager {
 
   final AuthBase auth;
   final ValueNotifier<bool> isLoading;
 
 
-  SignInBloc({@required this.auth, @required this.isLoading});
+  SignInManager({@required this.auth, @required this.isLoading});
 
   Future<User> _signIn(Future<User> Function() signInMethod) async {
     try {
