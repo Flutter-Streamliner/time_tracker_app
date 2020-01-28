@@ -14,12 +14,12 @@ class MyApp extends StatelessWidget {
     return Provider<AuthBase>(
         create: (context) => Auth(),
         child: MaterialApp(
-        title: 'Time Tracker',
-        theme: ThemeData(
-          primarySwatch: Colors.indigo,
+          title: 'Time Tracker',
+          theme: ThemeData(
+            primarySwatch: Colors.indigo,
+          ),
+          home: LandingPage(),
         ),
-        home: LandingPage(),
-      ),
     );
   }
 }
