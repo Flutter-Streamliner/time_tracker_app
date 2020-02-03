@@ -33,7 +33,7 @@ class FirestoreDatabase implements Database {
     final snapshots = reference.snapshots();
     return snapshots.map((snapshot) => 
       snapshot.documents.map((snap) => 
-        Job(name: snap.data['name'], ratePerHour: snap.data['ratePerHour'])
+        Job.fromMap(snap.data)
       ).toList());
   }
 }
