@@ -51,18 +51,6 @@ class JobPage extends StatelessWidget {
      );
   }
 
-  Future<void> _createJob(BuildContext context) async {
-    try {
-      final database = Provider.of<Database>(context, listen: false);
-      await database.createJob(Job(name: 'Programming', ratePerHour: 8));
-    } on PlatformException catch(e) {
-      PlatformExceptionAlertDialog(
-        title: 'Operation failed',
-        exception: e,
-      ).show(context);
-    }
-  }
-
   Future<void> _signOut(BuildContext context) async {
     try{ 
       await Provider.of<AuthBase>(context, listen: false).signOut();
