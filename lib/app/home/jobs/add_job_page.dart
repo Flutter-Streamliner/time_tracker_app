@@ -1,11 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:time_tracker_app/app/home/models/job.dart';
+import 'package:time_tracker_app/app/services/database.dart';
 
 class AddJobPage extends StatefulWidget {
 
+  final Database database;
+
+  AddJobPage({Key key, @required this.database}): super(key: key); 
+
   static Future<void> show(BuildContext context) async {
+    final database = Provider.of<Database>(context, listen: false);
     await Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (context) => AddJobPage(),
+        builder: (context) => AddJobPage(database: database,),
         fullscreenDialog: true
       ),
     );
@@ -39,12 +47,12 @@ class _AddJobPageState extends State<AddJobPage> {
     );
   }
 
-  void _submit() {
+  Future<void>  _submit() async {
     if (_validateAndSaveForm()) {
-      print('form saved name: $_name ratePerHour: $_ratePerHour');
+       final job = Job(name: _name, ratePerHour: _ratePerHour);
+       await widget.database.createJob(job); 
+       Navigator.of(context).pop();
     }
-    // TODO: submit data to Firestore
-    
   }
 
   bool _validateAndSaveForm() {
