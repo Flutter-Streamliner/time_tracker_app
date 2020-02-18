@@ -1,14 +1,12 @@
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'package:time_tracker_app/app/home/jobs/add_job_page.dart';
+import 'package:time_tracker_app/app/home/jobs/edit_job_page.dart';
 import 'package:time_tracker_app/app/home/jobs/job_list_tile.dart';
 import 'package:time_tracker_app/app/home/models/job.dart';
 import 'package:time_tracker_app/app/services/auth.dart';
 import 'package:time_tracker_app/app/services/database.dart';
 import 'package:time_tracker_app/app/widgets/platform_alert_dialog.dart';
-import 'package:time_tracker_app/app/widgets/platform_exception_alert_dialog.dart';
 
 class JobPage extends StatelessWidget {
 
@@ -28,7 +26,7 @@ class JobPage extends StatelessWidget {
       ),
       body: _buildContents(context),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => AddJobPage.show(context),
+        onPressed: () => EditJobPage.show(context),
         child: Icon(Icons.add),
       ),
     );
@@ -42,8 +40,10 @@ class JobPage extends StatelessWidget {
             final jobs = snapshot.data;
             final children = jobs.map((job) => JobListTile(
                                                 job: job,
-                                                onTap: (){},
-                                              ),).toList( );
+                                                onTap: () => EditJobPage.show(context, job: job)
+                                              ),
+                             )
+                             .toList();
             return ListView(children: children,);
           }
           if (snapshot.hasError) {
