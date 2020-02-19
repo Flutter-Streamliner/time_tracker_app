@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:time_tracker_app/app/home/jobs/edit_job_page.dart';
 import 'package:time_tracker_app/app/home/jobs/empty_content.dart';
@@ -9,6 +10,7 @@ import 'package:time_tracker_app/app/home/models/job.dart';
 import 'package:time_tracker_app/app/services/auth.dart';
 import 'package:time_tracker_app/app/services/database.dart';
 import 'package:time_tracker_app/app/widgets/platform_alert_dialog.dart';
+import 'package:time_tracker_app/app/widgets/platform_exception_alert_dialog.dart';
 
 class JobPage extends StatelessWidget {
 
@@ -40,14 +42,32 @@ class JobPage extends StatelessWidget {
        builder: (context, snapshot) {
          return ListItemsBuilder<Job>(
            snapshot: snapshot, 
-           itemBuilder: (context, job) => JobListTile(
-                                            job: job,
-                                            onTap: () => EditJobPage.show(context, job: job)
-                                          ),
-           );
+           itemBuilder: (context, job) => Dismissible(
+              key: Key('job-${job.id}'),
+              background: Container(color: Colors.red),
+              direction: DismissDirection.endToStart,
+              onDismissed: (direction) => _delete(context, job),
+              child: JobListTile(
+                job: job,
+                onTap: () => EditJobPage.show(context, job: job)
+              ),
+           ),
+          );
        },
        stream: database.jobsStream(),
      );
+  }
+
+  Future<void> _delete(BuildContext context, Job job) async {
+    try {
+      final database = Provider.of<Database>(context, listen: false);
+      await database.deleteJob(job);
+    } on PlatformException catch(e) {
+      PlatformExceptionAlertDialog(
+        title: 'Operation failed',
+        exception: e, 
+      ).show(context);
+    }
   }
 
   Future<void> _signOut(BuildContext context) async {
