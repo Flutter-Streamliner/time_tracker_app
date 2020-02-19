@@ -8,7 +8,7 @@ class ListItemsBuilder<T> extends StatelessWidget {
   final AsyncSnapshot<List<T>> snapshot;
   final ItemWidgetBuilder<T> itemBuilder;
 
-  const ListItemsBuilder({Key key, this.snapshot, this.itemBuilder}) : super(key: key);
+  const ListItemsBuilder({Key key, @required this.snapshot, @required this.itemBuilder}) : super(key: key);
   
 
   @override

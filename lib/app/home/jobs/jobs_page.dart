@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:time_tracker_app/app/home/jobs/edit_job_page.dart';
 import 'package:time_tracker_app/app/home/jobs/empty_content.dart';
 import 'package:time_tracker_app/app/home/jobs/job_list_tile.dart';
+import 'package:time_tracker_app/app/home/jobs/list_items_builder.dart';
 import 'package:time_tracker_app/app/home/models/job.dart';
 import 'package:time_tracker_app/app/services/auth.dart';
 import 'package:time_tracker_app/app/services/database.dart';
@@ -37,23 +38,13 @@ class JobPage extends StatelessWidget {
      final database = Provider.of<Database>(context);
      return StreamBuilder<List<Job>>(
        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            final jobs = snapshot.data;
-            if (jobs.isNotEmpty) {
-              final children = jobs.map((job) => JobListTile(
-                                                  job: job,
-                                                  onTap: () => EditJobPage.show(context, job: job)
-                                                ),
-                              )
-                              .toList();
-              return ListView(children: children,);
-            } 
-            return EmptyContent();
-          }
-          if (snapshot.hasError) {
-            return Center(child: Text('Some error occured.'),);
-          }
-          return Center(child: CircularProgressIndicator()) ; 
+         return ListItemsBuilder<Job>(
+           snapshot: snapshot, 
+           itemBuilder: (context, job) => JobListTile(
+                                            job: job,
+                                            onTap: () => EditJobPage.show(context, job: job)
+                                          ),
+           );
        },
        stream: database.jobsStream(),
      );
