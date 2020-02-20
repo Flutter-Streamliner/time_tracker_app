@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:provider/provider.dart';
 import 'package:time_tracker_app/app/home/models/job.dart';
 import 'package:time_tracker_app/app/services/database.dart';
 import 'package:time_tracker_app/app/widgets/platform_alert_dialog.dart';
@@ -13,8 +12,7 @@ class EditJobPage extends StatefulWidget {
 
   const EditJobPage({Key key, @required this.database, this.job}): super(key: key); 
 
-  static Future<void> show(BuildContext context, {Job job}) async {
-    final database = Provider.of<Database>(context, listen: false);
+  static Future<void> show(BuildContext context, {Database database, Job job}) async {
     await Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) => EditJobPage(database: database, job: job),

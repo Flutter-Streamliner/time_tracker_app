@@ -31,7 +31,7 @@ class JobPage extends StatelessWidget {
       ),
       body: _buildContents(context),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => EditJobPage.show(context),
+        onPressed: () => EditJobPage.show(context, database:  Provider.of<Database>(context, listen: false)),
         child: Icon(Icons.add),
       ),
     );
