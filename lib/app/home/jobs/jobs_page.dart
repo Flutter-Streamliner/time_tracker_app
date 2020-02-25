@@ -4,13 +4,10 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:time_tracker_app/app/home/job_entries/job_entries_page.dart';
 import 'package:time_tracker_app/app/home/jobs/edit_job_page.dart';
-import 'package:time_tracker_app/app/home/jobs/empty_content.dart';
 import 'package:time_tracker_app/app/home/jobs/job_list_tile.dart';
 import 'package:time_tracker_app/app/home/jobs/list_items_builder.dart';
 import 'package:time_tracker_app/app/home/models/job.dart';
-import 'package:time_tracker_app/app/services/auth.dart';
 import 'package:time_tracker_app/app/services/database.dart';
-import 'package:time_tracker_app/app/widgets/platform_alert_dialog.dart';
 import 'package:time_tracker_app/app/widgets/platform_exception_alert_dialog.dart';
 
 class JobPage extends StatelessWidget {
@@ -27,10 +24,6 @@ class JobPage extends StatelessWidget {
           IconButton(
             icon: Icon(Icons.add, color: Colors.white,),
             onPressed: () => EditJobPage.show(context, database:  Provider.of<Database>(context, listen: false)),
-          ),
-          FlatButton(
-            child: Text('Logout', style: TextStyle(color: Colors.white, fontSize: 18.0)),
-            onPressed: () => _confirmSignOut(context),
           ),
         ],
       ),
@@ -72,21 +65,5 @@ class JobPage extends StatelessWidget {
     }
   }
 
-  Future<void> _signOut(BuildContext context) async {
-    try{ 
-      await Provider.of<AuthBase>(context, listen: false).signOut();
-    } catch (e) {
-      print(e.toString());
-    }
-  }
-
-  Future<void> _confirmSignOut(BuildContext context) async {
-    final didRequestSignOut = await PlatformAlertDialog(
-      title: 'Logout',
-      content: 'Are you sure that you want to logout?',
-      defaultActionText: 'Logout',
-      cancelActionText: 'Cancel',
-    ).show(context);
-    if (didRequestSignOut == true) _signOut(context);
-  }
+  
 }
