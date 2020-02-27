@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 
 class Job {
   final String name;
@@ -19,5 +20,16 @@ class Job {
       'name' : name,
       'ratePerHour' : ratePerHour,
     };
+  }
+
+  @override
+  int get hashCode => hashValues(id, name, ratePerHour);
+
+  @override 
+  bool operator ==(other) {
+    if (identical(this, other)) return true;
+    if (runtimeType != other.runtimeType) return false;
+    final Job otherJob = other;
+    return id == otherJob.id && name == otherJob.name && ratePerHour == otherJob.ratePerHour; 
   }
 }
