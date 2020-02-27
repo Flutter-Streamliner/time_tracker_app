@@ -6,6 +6,7 @@ import 'package:time_tracker_app/app/widgets/platform_alert_dialog.dart';
 class AccountPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final user = Provider.of<User>(context, listen: false);
     return Scaffold(
       appBar: AppBar(
         title: Text('Account'),

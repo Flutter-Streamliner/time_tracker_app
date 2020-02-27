@@ -21,7 +21,7 @@ class Auth implements AuthBase {
   
   User _userFromFirebase(FirebaseUser user) {
     if (user == null) return null;
-    return User(uid: user.uid);
+    return User(uid: user.uid, photoUrl: user.photoUrl, displayName: user.displayName);
   }
 
   Stream<User> get onAuthStateChanged {
@@ -124,7 +124,9 @@ class Auth implements AuthBase {
 class User {
 
   final String uid;
+  final String photoUrl;
+  final String displayName;
 
-  User({@required this.uid});
+  User({@required this.uid, @required this.photoUrl, @required this.displayName});
 
 }
