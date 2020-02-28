@@ -58,5 +58,49 @@ void main() {
       verify(mockAuth.signInWithEmailAndPassword(email: email, password: password)).called(1);
     });
   });
+
+  group('registration', (){
+    testWidgets('WHEN user taps on the secondary button'
+      'THEN form toggles to registration mode', (WidgetTester tester) async {
+      await pumpEmailSignInForm(tester);
+
+      final registerButton = find.text('Need an account? Register');
+      await tester.tap(registerButton);
+
+      await tester.pump();
+
+      final createAccountButton = find.text('Create an account');
+      expect(createAccountButton, findsOneWidget);
+      
+    });
+    testWidgets('WHEN user taps on the secondary button'
+      'AND user enters the email and password'
+      'AND user taps on the register button'
+      'THEN createUserWithEmailAndPassword is called', (WidgetTester tester) async {
+      await pumpEmailSignInForm(tester);
+
+      const email = 'email@test.com';
+      const password = 'password';
+
+      final registerButton = find.text('Need an account? Register');
+      await tester.tap(registerButton);
+
+      await tester.pump();
+
+      final emailField = find.byKey(Key('email'));
+      final passwordField = find.byKey(Key('password'));
+      expect(emailField, findsOneWidget);
+      expect(passwordField, findsOneWidget);
+      await tester.enterText(emailField, email);
+      await tester.enterText(passwordField, password);
+      await tester.pump();
+      
+      final createAccountButton = find.text('Create an account');
+      expect(createAccountButton, findsOneWidget);
+      await tester.tap(createAccountButton);
+
+      verify(mockAuth.createUserWithEmailAndPassword(email: email, password: password)).called(1);
+    });
+  });
   
 }
