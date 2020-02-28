@@ -13,13 +13,13 @@ void main() {
     mockAuth = MockAuth();
   });
 
-  Future<void> pumpEmailSignInForm(WidgetTester tester) async {
+  Future<void> pumpEmailSignInForm(WidgetTester tester, {VoidCallback onSignIn}) async {
     await tester.pumpWidget(
       Provider<AuthBase>(
         create: (_) => mockAuth,
         child: MaterialApp(
           home: Scaffold(
-            body: EmailSignInFormStateful(),
+            body: EmailSignInFormStateful(onSignIn: onSignIn,),
           )
         ),
       )
@@ -28,18 +28,23 @@ void main() {
   group('sign in', (){
     testWidgets('WHEN user doesn\'t enter the email and password'
       'AND user taps on the sign-in button'
-      'THEN signInWithEmailAndPassword is not called', (WidgetTester tester) async {
-      await pumpEmailSignInForm(tester);
+      'THEN signInWithEmailAndPassword is not called'
+      'AND user is not signed in', (WidgetTester tester) async {
+      var signedIn = false;  
+      await pumpEmailSignInForm(tester, onSignIn: () => signedIn = true);
 
       final signInButton = find.text('Sign in');
       await tester.tap(signInButton);
       
       verifyNever(mockAuth.signInWithEmailAndPassword(email: anyNamed('email'), password: anyNamed('password')));
+      expect(signedIn, false);
     });
-    testWidgets('WHEN user enters the email and password'
+    testWidgets('WHEN user enters a valid email and password'
       'AND user taps on the sign in button'
-      'THEN signInWithEmailAndPassword is called', (WidgetTester tester) async {
-      await pumpEmailSignInForm(tester);
+      'THEN signInWithEmailAndPassword is called'
+      'AND user is signed in', (WidgetTester tester) async {
+      var signedIn = false;  
+      await pumpEmailSignInForm(tester, onSignIn: () => signedIn = true);
 
       const email = 'email@test.com';
       const password = 'password';
@@ -56,6 +61,7 @@ void main() {
       await tester.tap(signInButton);
 
       verify(mockAuth.signInWithEmailAndPassword(email: email, password: password)).called(1);
+      expect(signedIn, true);
     });
   });
 

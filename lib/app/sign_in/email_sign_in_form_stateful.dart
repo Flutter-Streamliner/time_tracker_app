@@ -11,6 +11,10 @@ enum EmailSignInFormType {
 }
 
 class EmailSignInFormStateful extends StatefulWidget with EmailAndPasswordValidators {
+
+  final VoidCallback onSignIn;
+
+  EmailSignInFormStateful({this.onSignIn});
   
   @override
   _EmailSignInFormState createState() => _EmailSignInFormState();
@@ -53,7 +57,8 @@ class _EmailSignInFormState extends State<EmailSignInFormStateful> {
       } else {
         await auth.createUserWithEmailAndPassword(email: _email, password: _password);
       }
-      Navigator.of(context).pop();
+      if (widget.onSignIn != null) widget.onSignIn();
+      //Navigator.of(context).pop();
     } on PlatformException catch (e) {
       PlatformExceptionAlertDialog(
         title: 'Sign in failed', 
