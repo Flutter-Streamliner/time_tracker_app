@@ -11,6 +11,7 @@ class Job {
   factory Job.fromMap(Map<String, dynamic> data, String documentId) {
     if (data == null) return null;
     final String name = data['name'];
+    if (name == null) return null;
     final int ratePerHour = data['ratePerHour'];
     return Job(id: documentId, name: name, ratePerHour: ratePerHour);
   }
@@ -32,4 +33,7 @@ class Job {
     final Job otherJob = other;
     return id == otherJob.id && name == otherJob.name && ratePerHour == otherJob.ratePerHour; 
   }
+
+  @override
+  String toString() => 'id: $id, name: $name, ratePerHour: $ratePerHour';
 }
