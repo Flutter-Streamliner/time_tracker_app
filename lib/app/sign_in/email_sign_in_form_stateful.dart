@@ -106,6 +106,7 @@ class _EmailSignInFormState extends State<EmailSignInFormStateful> {
   Widget _buildEmailTextField() {
     bool showErrorText = _submitted && widget.emailValidator.isValid(_email);
     return TextField(
+        key: Key('email'),
         controller: _emailController,
         autocorrect: false, // remove suggestions on keyboard
         keyboardType: TextInputType.emailAddress,
@@ -130,6 +131,7 @@ class _EmailSignInFormState extends State<EmailSignInFormStateful> {
   Widget _buildPasswordTextField() {
     bool showErrorText = _submitted && widget.passwordValidator.isValid(_password);
     return TextField(
+        key: Key('password'),
         controller: _passwordController,
         textInputAction: TextInputAction.done,
         focusNode: _passwordFocus,
