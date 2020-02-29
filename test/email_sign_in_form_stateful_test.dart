@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:provider/provider.dart';
@@ -25,6 +26,17 @@ void main() {
       )
     );
   }
+
+  void stubSignInWithEmailAndPasswordSucceeds() {
+    when(mockAuth.signInWithEmailAndPassword(email: anyNamed('email'), password: anyNamed('password')))
+      .thenAnswer((_) => Future<User>.value(User(uid: '123', photoUrl: 'url', displayName: 'Lan')));
+  }
+
+  void stubSignInWithEmailAndPasswordThrows() {
+    when(mockAuth.signInWithEmailAndPassword(email: anyNamed('email'), password: anyNamed('password')))
+      .thenThrow(PlatformException(code: 'ERROR_WRONG_PASSWORD'));
+  }
+
   group('sign in', (){
     testWidgets('WHEN user doesn\'t enter the email and password'
       'AND user taps on the sign-in button'
@@ -46,6 +58,7 @@ void main() {
       var signedIn = false;  
       await pumpEmailSignInForm(tester, onSignIn: () => signedIn = true);
 
+      stubSignInWithEmailAndPasswordSucceeds();
       const email = 'email@test.com';
       const password = 'password';
 
@@ -62,6 +75,32 @@ void main() {
 
       verify(mockAuth.signInWithEmailAndPassword(email: email, password: password)).called(1);
       expect(signedIn, true);
+    });
+
+    testWidgets('WHEN user enters an invalid email and password'
+      'AND user taps on the sign in button'
+      'THEN signInWithEmailAndPassword is called'
+      'AND user is not signed in', (WidgetTester tester) async {
+      var signedIn = false;  
+      await pumpEmailSignInForm(tester, onSignIn: () => signedIn = true);
+
+      stubSignInWithEmailAndPasswordThrows();
+      const email = 'email@test.com';
+      const password = 'password';
+
+      final emailField = find.byKey(Key('email'));
+      final passwordField = find.byKey(Key('password'));
+      expect(emailField, findsOneWidget);
+      expect(passwordField, findsOneWidget);
+      await tester.enterText(emailField, email);
+      await tester.enterText(passwordField, password);
+      await tester.pump();
+      
+      final signInButton = find.text('Sign in');
+      await tester.tap(signInButton);
+
+      verify(mockAuth.signInWithEmailAndPassword(email: email, password: password)).called(1);
+      expect(signedIn, false);
     });
   });
 
