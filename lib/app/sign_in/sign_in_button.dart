@@ -4,6 +4,7 @@ import 'package:time_tracker_app/app/widgets/custom_raised_button.dart';
 class SignInButton extends CustomRaisedButton {
 
   SignInButton({
+    Key key,
     @required String text, 
     Color color,
     Color textColor,
@@ -11,6 +12,7 @@ class SignInButton extends CustomRaisedButton {
   }) : 
   assert (text != null),
   super(
+    key: key,
     child: Text(
       text, 
       style: TextStyle(color: textColor, fontSize: 15.0,),
